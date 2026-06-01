@@ -1,0 +1,15 @@
+{
+  "name": "unibill",
+  "version": "1.0.0",
+  "description": "UniBill — Industry-grade GST Billing, POS & Inventory ERP",
+  "private": true,
+  "scripts": {
+    "install:all": "cd server && npm install && cd ../client && npm install",
+    "seed": "cd server && npm run seed",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "setup": "npm run install:all && npm run seed && npm run build"
+  }
+}

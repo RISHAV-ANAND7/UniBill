@@ -1,0 +1,551 @@
+# UniBill - Local Setup Guide
+
+Complete step-by-step instructions to run UniBill (GST Billing & Inventory ERP) on your local system.
+
+## 📋 System Requirements
+
+### Minimum Requirements
+
+- **Node.js**: v18 or higher (v20+ recommended)
+- **npm**: v9 or higher (usually comes with Node.js)
+- **OS**: Windows 10+, macOS 10.15+, Ubuntu 18.04+
+- **RAM**: 4GB minimum (8GB recommended)
+- **Disk Space**: 500MB free space
+
+### Verify Installation
+
+```bash
+# Check Node.js version
+node --version
+
+# Check npm version
+npm --version
+```
+
+If not installed, download from [nodejs.org](https://nodejs.org/)
+
+---
+
+## 🚀 Quick Start (5 minutes)
+
+### Step 1: Clone/Download the Repository
+
+```bash
+# If using git
+git clone <repository-url>
+cd ezybill-pro
+
+# Or manually download and extract the folder
+```
+
+### Step 2: Install Dependencies
+
+```bash
+# Install all dependencies (root, server, and client)
+npm run install:all
+```
+
+This will install:
+
+- Backend dependencies (`server/node_modules/`)
+- Frontend dependencies (`client/node_modules/`)
+- Database drivers (`better-sqlite3`)
+
+### Step 3: Seed Database with Demo Data
+
+```bash
+npm run seed
+```
+
+This creates:
+
+- Database file: `server/data/unibill.db`
+- Demo company: Sharma Electronics & Hardware
+- Demo users (admin + cashier)
+- Sample products and invoices
+
+### Step 4: Start Development Servers
+
+**Terminal 1 - Start Backend API:**
+
+```bash
+npm run dev:server
+```
+
+Expected output:
+
+```
+🌍 API server running at http://localhost:4000
+📊 Health check: http://localhost:4000/api/health
+```
+
+**Terminal 2 - Start Frontend (in a new terminal):**
+
+```bash
+npm run dev:client
+```
+
+Expected output:
+
+```
+  VITE v5.0.0  ready in 234 ms
+  ➜  Local:   http://localhost:5173/
+```
+
+### Step 5: Access the Application
+
+Open your browser and visit: **http://localhost:5173**
+
+---
+
+## 🔐 Demo Credentials
+
+### Admin Account
+
+- **Email**: `admin@unibill.com`
+- **Password**: `admin123`
+- **Access**: Full system access (settings, reports, delete operations)
+
+### Cashier Account
+
+- **Email**: `cashier@unibill.com`
+- **Password**: `cashier123`
+- **Access**: POS, invoices, basic reports (limited to billing only)
+
+---
+
+## 📂 Project Structure
+
+```
+ezybill-pro/
+├── server/                    # Backend API (Express.js)
+│   ├── src/
+│   │   ├── index.js          # Server entry point
+│   │   ├── db.js             # SQLite database setup
+│   │   ├── middleware/       # Auth, validation, error handling
+│   │   └── routes/           # API endpoints (invoices, products, etc.)
+│   ├── data/
+│   │   └── unibill.db        # SQLite database (created after seed)
+│   ├── package.json
+│   └── .env                  # Environment variables (create manually)
+│
+├── client/                    # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── pages/            # Page components (POS, Reports, etc.)
+│   │   ├── components/       # Reusable UI components
+│   │   ├── api.js            # API client wrapper
+│   │   ├── auth.jsx          # Auth context
+│   │   └── App.jsx           # Main app component
+│   ├── dist/                 # Built production files
+│   ├── package.json
+│   └── vite.config.js        # Vite configuration
+│
+├── package.json              # Root package (scripts)
+└── README.md                 # Main documentation
+```
+
+---
+
+## 🔧 Available npm Scripts
+
+### From Root Directory
+
+```bash
+# Installation & Setup
+npm run install:all          # Install all dependencies
+npm run seed                 # Seed database with demo data
+npm run seed:prod           # Seed with production config
+
+# Development
+npm run dev                 # Start both servers (requires 2 terminals)
+npm run dev:server         # Start backend only
+npm run dev:client         # Start frontend only
+
+# Building
+npm run build:server       # Build backend
+npm run build:client       # Build frontend
+npm run build              # Build both
+
+# Production
+npm start                  # Run production build
+npm run prod:start        # Alternative production start
+
+# Database
+npm run db:reset          # Clear and reseed database
+npm run db:backup         # Backup database
+
+# Utilities
+npm run setup:env         # Generate .env file for production
+```
+
+---
+
+## 🌍 Environment Configuration
+
+### Development Mode (Default)
+
+No configuration needed! Just run `npm run dev:server` and `npm run dev:client`
+
+### Production Deployment
+
+#### 1. Generate Environment Variables
+
+```bash
+npm run setup:env
+```
+
+This creates a `.env` file with:
+
+- Auto-generated `JWT_SECRET`
+- Port configuration
+- CORS settings
+- Database path
+
+#### 2. Review and Update `.env`
+
+```env
+# server/.env
+PORT=4000
+NODE_ENV=production
+JWT_SECRET=<auto-generated-32-character-secret>
+
+# Adjust CORS for your domain
+ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
+
+# Optional: Custom database location
+# DATABASE_PATH=./data/unibill.db
+```
+
+⚠️ **Never commit `.env` to version control** (already in `.gitignore`)
+
+#### 3. Build for Production
+
+```bash
+npm run build
+```
+
+This creates:
+
+- `server/dist/` - Production backend
+- `client/dist/` - Production frontend
+
+#### 4. Run Production Server
+
+```bash
+npm start
+```
+
+The app will be available at the configured port (default: 4000)
+
+---
+
+## 🗄️ Database Management
+
+### Database Location
+
+- **Development**: `server/data/unibill.db`
+- **Custom**: Set `DATABASE_PATH` in `.env` to use a different location
+
+### Database Backup
+
+```bash
+# Backup current database
+npm run db:backup
+
+# Creates: server/data/unibill.db.backup
+```
+
+### Reset Database
+
+```bash
+# Clear all data and reseed with demo data
+npm run db:reset
+```
+
+### Direct Database Access
+
+If you want to inspect or modify the database directly:
+
+1. **Install SQLite CLI**: [sqlite.org](https://www.sqlite.org/download.html)
+
+2. **Open Database**:
+
+```bash
+sqlite3 server/data/unibill.db
+```
+
+3. **Common Queries**:
+
+```sql
+-- List all tables
+.tables
+
+-- Check users
+SELECT id, name, email, role FROM users;
+
+-- Check companies
+SELECT * FROM company;
+
+-- Backup with SQL dump
+.dump > backup.sql
+```
+
+---
+
+## 📊 Key Features & Access
+
+### POS (Point of Sale)
+
+- **URL**: http://localhost:5173/pos
+- **Access**: Cashier & Admin
+- **Features**: Create invoices, manage cart, apply discounts, print bills
+
+### Invoices
+
+- **URL**: http://localhost:5173/invoices
+- **Access**: All roles (with filters by user)
+- **Features**: View, search, filter invoices, print, export
+
+### Products
+
+- **URL**: http://localhost:5173/products
+- **Access**: Admin only
+- **Features**: Create, edit, delete products, manage inventory
+
+### Customers
+
+- **URL**: http://localhost:5173/customers
+- **Access**: Admin only (Cashier can view via POS)
+- **Features**: Manage customers, track balances, opening balance
+
+### Reports & GST
+
+- **URL**: http://localhost:5173/reports
+- **Access**: Admin only
+- **Features**: Sales reports, GST summary, tax calculations
+
+### Settings
+
+- **URL**: http://localhost:5173/settings
+- **Access**: Admin only
+- **Features**: Company info, invoice prefix, GST configuration
+
+---
+
+## 🐛 Troubleshooting
+
+### Issue: "Port 4000 already in use"
+
+```bash
+# Kill process using port 4000
+# Windows
+netstat -ano | findstr :4000
+taskkill /PID <PID> /F
+
+# macOS/Linux
+lsof -i :4000
+kill -9 <PID>
+
+# Or use a different port
+export PORT=5000
+npm run dev:server
+```
+
+### Issue: "Cannot find module 'better-sqlite3'"
+
+```bash
+# Reinstall database driver with build tools
+npm install --build-from-source
+# or
+npm run install:all
+```
+
+### Issue: Database file not created after seed
+
+```bash
+# Ensure server/data directory exists
+mkdir -p server/data
+
+# Run seed again
+npm run seed
+```
+
+### Issue: "CORS error" or "API connection failed"
+
+- Verify backend is running: `http://localhost:4000/api/health`
+- Check firewall settings
+- Ensure frontend URL is in `ALLOWED_ORIGINS` (in `.env`)
+
+### Issue: Login fails with correct credentials
+
+```bash
+# Clear browser cache and localStorage
+# In browser console:
+localStorage.clear();
+sessionStorage.clear();
+
+# Refresh and try again
+```
+
+### Issue: Frontend not rebuilding on file changes
+
+```bash
+# Restart frontend server
+npm run dev:client
+
+# Check for file watcher limits (Linux)
+cat /proc/sys/fs/inotify/max_user_watches  # Should be > 8192
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+```
+
+---
+
+## 🔒 Security Best Practices (Production)
+
+1. **Change Default Credentials**
+   - Delete demo users from database after setup
+   - Create new admin accounts
+   - Update seed.js before deploying
+
+2. **Secure Environment Variables**
+   - Use strong `JWT_SECRET` (20+ characters)
+   - Never expose `.env` files
+   - Use environment-specific configs
+
+3. **Database Security**
+   - Regular backups: `npm run db:backup`
+   - Restrict file permissions: `chmod 600 server/data/unibill.db`
+   - Monitor database size and queries
+
+4. **API Security**
+   - HTTPS only in production
+   - Set `ALLOWED_ORIGINS` to specific domains
+   - Implement rate limiting (currently not configured)
+   - Validate all user inputs
+
+5. **Role-Based Access**
+   - Admin: System settings, reports, user management
+   - Cashier: POS only, no settings access
+   - Verify role enforcement on all sensitive routes
+
+---
+
+## 📝 Common Tasks
+
+### Change Company Name
+
+Edit `server/src/seed.js` line 19-23, then:
+
+```bash
+npm run db:reset
+```
+
+### Update Demo Credentials
+
+Edit `server/src/seed.js` lines 12-16, then:
+
+```bash
+npm run db:reset
+```
+
+### Export All Data
+
+```bash
+# SQL dump of entire database
+sqlite3 server/data/unibill.db ".dump" > unibill_export.sql
+```
+
+### Disable Demo Users
+
+Remove lines 12-16 from `server/src/seed.js`, then:
+
+```bash
+npm run db:reset
+```
+
+---
+
+## 🚀 Deployment Options
+
+### Local Network Access (LAN)
+
+```bash
+# Find your local IP
+ipconfig getifaddr en0  # macOS
+ifconfig  # Linux
+ipconfig  # Windows
+
+# Start server on all interfaces
+export HOST=0.0.0.0
+npm start
+
+# Access from another device: http://<YOUR_IP>:4000
+```
+
+### Docker Deployment
+
+```bash
+# Dockerfile provided in root
+docker build -t unibill .
+docker run -p 4000:4000 -p 5173:5173 unibill
+```
+
+### Cloud Deployment (Heroku, Railway, Render)
+
+```bash
+# Build and push to cloud
+npm run build
+
+# Set production environment variables on cloud platform
+# Deploy using platform-specific CLI
+```
+
+---
+
+## ✅ Verification Checklist
+
+After setup, verify everything works:
+
+- [ ] Backend running at `http://localhost:4000`
+- [ ] Frontend accessible at `http://localhost:5173`
+- [ ] Health check passes: `http://localhost:4000/api/health`
+- [ ] Login works with demo credentials
+- [ ] Can create a test invoice in POS
+- [ ] Can view products and customers
+- [ ] Can generate reports
+- [ ] Database file exists at `server/data/unibill.db`
+
+---
+
+## 📞 Support & Resources
+
+- **Main Documentation**: See `README.md`
+- **Bug Reports**: Document errors in browser console and server logs
+- **Feature Requests**: Review `AUDIT_REPORT.md` for current capabilities
+- **API Documentation**: Check `server/src/routes/` for endpoint specs
+
+---
+
+## 🔄 Updating from GitHub
+
+```bash
+# Pull latest changes
+git pull origin main
+
+# Reinstall dependencies (in case packages changed)
+npm run install:all
+
+# Run migrations (if any schema changes)
+npm run seed
+
+# Rebuild and restart
+npm run build
+npm start
+```
+
+---
+
+**Last Updated**: January 2025  
+**Version**: UniBill 1.0.0  
+**Node.js Support**: v18+  
+**Database**: SQLite 3.x

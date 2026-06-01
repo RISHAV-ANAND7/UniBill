@@ -295,4 +295,4 @@ npm start  # or use PM2/systemd to keep running
 
 ---
 
-_Built as an industry-grade reference implementation. � EzyBill Pro._
+_Built as an industry-grade reference implementation. � UniBill 
